@@ -12,7 +12,8 @@ class ParticleSystem {
         this.fps = 60;
         this.fpsCount = 0;
         this.fpsTime = 0;
-        this.trailLength = 10; // New: trail length for particles
+        this.trailLength = 15; // Increased trail length for better visual effect
+        this.connectionDistance = 150; // Distance for particle connections
         
         // Ensure canvas is properly initialized
         if (!this.ctx) {
@@ -146,35 +147,26 @@ class ParticleSystem {
         
         this.particles.forEach(particle => {
             particle.update(deltaTime * this.speed);
-            
-            // Wrap around screen
-            if (particle.x < 0) particle.x = this.canvas.width;
-            if (particle.x > this.canvas.width) particle.x = 0;
-            if (particle.y < 0) particle.y = this.canvas.height;
-            if (particle.y > this.canvas.height) particle.y = 0;
         });
     }
     
     draw() {
-        // Clear the canvas with a subtle fade effect
-        this.ctx.fillStyle = 'rgba(102, 126, 234, 0.1)';
+        // Clear canvas with a subtle fade effect
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        
-        // Draw particles
-        if (this.particles.length > 0) {
-            this.particles.forEach((particle, index) => {
-                particle.draw(this.ctx);
-            });
-        } else {
-            console.log('No particles to draw!');
-        }
         
         // Draw connections between nearby particles
         this.drawConnections();
+        
+        // Draw particles
+        this.particles.forEach(particle => {
+            particle.draw(this.ctx);
+        });
     }
     
     drawConnections() {
-        const maxDistance = 100;
+        this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+        this.ctx.lineWidth = 0.5;
         
         for (let i = 0; i < this.particles.length; i++) {
             for (let j = i + 1; j < this.particles.length; j++) {
@@ -182,10 +174,9 @@ class ParticleSystem {
                 const dy = this.particles[i].y - this.particles[j].y;
                 const distance = Math.sqrt(dx * dx + dy * dy);
                 
-                if (distance < maxDistance) {
-                    const opacity = 1 - (distance / maxDistance);
-                    this.ctx.strokeStyle = `rgba(255, 255, 255, ${opacity * 0.3})`;
-                    this.ctx.lineWidth = 1;
+                if (distance < this.connectionDistance) {
+                    const alpha = 1 - (distance / this.connectionDistance);
+                    this.ctx.strokeStyle = `rgba(255, 255, 255, ${alpha * 0.1})`;
                     this.ctx.beginPath();
                     this.ctx.moveTo(this.particles[i].x, this.particles[i].y);
                     this.ctx.lineTo(this.particles[j].x, this.particles[j].y);
@@ -199,7 +190,7 @@ class ParticleSystem {
         const deltaTime = currentTime - this.lastTime;
         this.lastTime = currentTime;
         
-        // FPS calculation
+        // Update FPS counter
         this.fpsCount++;
         this.fpsTime += deltaTime;
         if (this.fpsTime >= 1000) {
@@ -220,19 +211,21 @@ class ParticleSystem {
 }
 
 class Particle {
-    constructor(x, y, z, size, colorScheme, trailLength = 10) {
+    constructor(x, y, z, size, colorScheme, trailLength = 15) {
         this.x = x;
         this.y = y;
         this.z = z;
-        this.size = size;
-        this.colorScheme = colorScheme;
         this.vx = (Math.random() - 0.5) * 2;
         this.vy = (Math.random() - 0.5) * 2;
         this.vz = (Math.random() - 0.5) * 2;
-        this.life = Math.random();
-        this.maxLife = 1;
+        this.size = size;
+        this.colorScheme = colorScheme;
+        this.trail = [];
         this.trailLength = trailLength;
-        this.trail = []; // New: particle trail
+        this.life = Math.random() * Math.PI * 2;
+        this.maxLife = Math.PI * 2;
+        this.sparkleTimer = 0;
+        
         this.updateColor(colorScheme);
     }
     
@@ -243,21 +236,28 @@ class Particle {
                 this.color = `hsl(${Math.random() * 360}, 80%, 60%)`;
                 break;
             case 'fire':
-                const fireHue = 15 + Math.random() * 30;
-                this.color = `hsl(${fireHue}, 100%, ${50 + Math.random() * 30}%)`;
+                const fireColors = ['#ff4500', '#ff6347', '#ff7f50', '#ff8c00', '#ffa500'];
+                this.color = fireColors[Math.floor(Math.random() * fireColors.length)];
                 break;
             case 'ocean':
-                const oceanHue = 180 + Math.random() * 60;
-                this.color = `hsl(${oceanHue}, 80%, ${40 + Math.random() * 30}%)`;
+                const oceanColors = ['#00bfff', '#1e90ff', '#4169e1', '#4682b4', '#5f9ea0'];
+                this.color = oceanColors[Math.floor(Math.random() * oceanColors.length)];
                 break;
             case 'neon':
                 const neonColors = ['#ff00ff', '#00ffff', '#ffff00', '#ff0080', '#8000ff'];
                 this.color = neonColors[Math.floor(Math.random() * neonColors.length)];
                 break;
-            case 'aurora': // New: Aurora color scheme
+            case 'aurora':
                 const auroraHues = [120, 150, 180, 210, 240];
                 const hue = auroraHues[Math.floor(Math.random() * auroraHues.length)];
                 this.color = `hsl(${hue + Math.random() * 30}, 90%, ${60 + Math.random() * 20}%)`;
+                break;
+            case 'galaxy': // New: Galaxy color scheme
+                const galaxyColors = [
+                    '#4b0082', '#8a2be2', '#9370db', '#ba55d3', '#dda0dd',
+                    '#e6e6fa', '#f8f8ff', '#fff0f5', '#ffe4e1', '#ffb6c1'
+                ];
+                this.color = galaxyColors[Math.floor(Math.random() * galaxyColors.length)];
                 break;
             default:
                 this.color = `hsl(${Math.random() * 360}, 80%, 60%)`;
@@ -290,42 +290,78 @@ class Particle {
         // Add some wave motion
         this.x += Math.sin(this.life * 2) * 0.5;
         this.y += Math.cos(this.life * 1.5) * 0.5;
+        
+        // Update sparkle timer
+        this.sparkleTimer += deltaTime;
+        
+        // Wrap around screen edges
+        if (this.x < 0) this.x = window.innerWidth;
+        if (this.x > window.innerWidth) this.x = 0;
+        if (this.y < 0) this.y = window.innerHeight;
+        if (this.y > window.innerHeight) this.y = 0;
     }
     
     draw(ctx) {
-        // Draw trail
+        // Draw trail with enhanced glow effect
         this.trail.forEach((point, index) => {
-            const alpha = point.alpha * 0.6;
-            const size = Math.max(1, this.size * point.alpha);
+            const alpha = point.alpha * 0.4;
+            const size = Math.max(1, this.size * point.alpha * 0.8);
             
             ctx.save();
             ctx.globalAlpha = alpha;
-            ctx.fillStyle = this.color;
+            
+            // Enhanced glow effect for trail
+            const gradient = ctx.createRadialGradient(point.x, point.y, 0, point.x, point.y, size * 3);
+            gradient.addColorStop(0, this.color);
+            gradient.addColorStop(1, 'transparent');
+            
+            ctx.fillStyle = gradient;
             ctx.beginPath();
-            ctx.arc(point.x, point.y, size, 0, Math.PI * 2);
+            ctx.arc(point.x, point.y, size * 3, 0, Math.PI * 2);
             ctx.fill();
+            
             ctx.restore();
         });
         
-        // Draw main particle
+        // Draw main particle with enhanced effects
         const alpha = 1.0;
         const size = Math.max(2, this.size);
         
         ctx.save();
         ctx.globalAlpha = alpha;
         
-        // Draw a simple solid circle
+        // Enhanced glow effect
+        const glowGradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, size * 4);
+        glowGradient.addColorStop(0, this.color);
+        glowGradient.addColorStop(0.5, this.color + '80');
+        glowGradient.addColorStop(1, 'transparent');
+        
+        ctx.fillStyle = glowGradient;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, size * 4, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Main particle
         ctx.fillStyle = this.color;
         ctx.beginPath();
         ctx.arc(this.x, this.y, size, 0, Math.PI * 2);
         ctx.fill();
         
-        // Add a glow effect
-        ctx.shadowColor = this.color;
-        ctx.shadowBlur = size * 2;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, size * 0.5, 0, Math.PI * 2);
-        ctx.fill();
+        // Sparkle effect
+        if (this.sparkleTimer > 2000 && Math.random() < 0.1) {
+            ctx.save();
+            ctx.globalAlpha = 0.8;
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(this.x - size * 2, this.y);
+            ctx.lineTo(this.x + size * 2, this.y);
+            ctx.moveTo(this.x, this.y - size * 2);
+            ctx.lineTo(this.x, this.y + size * 2);
+            ctx.stroke();
+            ctx.restore();
+            this.sparkleTimer = 0;
+        }
         
         ctx.restore();
     }
