@@ -394,4 +394,103 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         console.error('Canvas element not found!');
     }
-}); 
+    
+    // Initialize jumping bear
+    initJumpingBear();
+});
+
+// Jumping Bear functionality
+function initJumpingBear() {
+    const bear = document.getElementById('jumpingBear');
+    if (!bear) return;
+    
+    const bearSpan = bear.querySelector('span');
+    if (!bearSpan) return;
+    
+    let bearDirection = 1;
+    let bearSpeed = 1;
+    let isBearActive = true;
+    
+    // Make bear interactive
+    bear.addEventListener('click', () => {
+        // Change bear direction and speed
+        bearDirection *= -1;
+        bearSpeed = Math.random() * 2 + 0.5;
+        
+        // Add a fun effect
+        bear.style.animation = 'none';
+        bear.offsetHeight; // Trigger reflow
+        bear.style.animation = `bearJump ${3 / bearSpeed}s ease-in-out infinite`;
+        
+        // Add a sparkle effect
+        createSparkle(bear);
+        
+        // Change bear emoji randomly
+        const bearEmojis = ['🐻', '🐨', '🐼', '🧸'];
+        const randomBear = bearEmojis[Math.floor(Math.random() * bearEmojis.length)];
+        bearSpan.textContent = randomBear;
+        
+        console.log('Bear clicked! New direction:', bearDirection, 'Speed:', bearSpeed);
+    });
+    
+    // Create sparkle effect
+    function createSparkle(element) {
+        const sparkle = document.createElement('div');
+        sparkle.style.position = 'absolute';
+        sparkle.style.left = '50%';
+        sparkle.style.top = '50%';
+        sparkle.style.transform = 'translate(-50%, -50%)';
+        sparkle.style.fontSize = '20px';
+        sparkle.style.pointerEvents = 'none';
+        sparkle.style.zIndex = '20';
+        sparkle.textContent = '✨';
+        sparkle.style.animation = 'sparkleFade 1s ease-out forwards';
+        
+        element.appendChild(sparkle);
+        
+        // Remove sparkle after animation
+        setTimeout(() => {
+            if (sparkle.parentNode) {
+                sparkle.parentNode.removeChild(sparkle);
+            }
+        }, 1000);
+    }
+    
+    // Add sparkle animation to CSS
+    if (!document.querySelector('#bear-sparkle-style')) {
+        const style = document.createElement('style');
+        style.id = 'bear-sparkle-style';
+        style.textContent = `
+            @keyframes sparkleFade {
+                0% {
+                    opacity: 1;
+                    transform: translate(-50%, -50%) scale(0);
+                }
+                50% {
+                    opacity: 1;
+                    transform: translate(-50%, -50%) scale(1.5);
+                }
+                100% {
+                    opacity: 0;
+                    transform: translate(-50%, -50%) scale(2);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    // Make bear move around more dynamically
+    setInterval(() => {
+        if (!isBearActive) return;
+        
+        // Randomly change bear's position slightly
+        const currentLeft = parseInt(bear.style.left) || 50;
+        const currentBottom = parseInt(bear.style.bottom) || 20;
+        
+        const newLeft = Math.max(20, Math.min(window.innerWidth - 100, currentLeft + (Math.random() - 0.5) * 50));
+        const newBottom = Math.max(10, Math.min(window.innerHeight - 100, currentBottom + (Math.random() - 0.5) * 30));
+        
+        bear.style.left = newLeft + 'px';
+        bear.style.bottom = newBottom + 'px';
+    }, 5000);
+} 

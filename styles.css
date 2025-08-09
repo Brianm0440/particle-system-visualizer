@@ -227,6 +227,56 @@ body::before {
     background: transparent;
 }
 
+/* Jumping Bear */
+.jumping-bear {
+    position: fixed;
+    bottom: 20px;
+    left: 50px;
+    width: 80px;
+    height: 80px;
+    z-index: 15;
+    animation: bearJump 3s ease-in-out infinite;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.jumping-bear:hover {
+    transform: scale(1.2);
+}
+
+.jumping-bear span {
+    font-size: 80px;
+    display: block;
+    animation: bearBounce 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes bearJump {
+    0%, 100% {
+        transform: translateY(0) translateX(0);
+    }
+    25% {
+        transform: translateY(-200px) translateX(100px);
+    }
+    50% {
+        transform: translateY(-100px) translateX(200px);
+    }
+    75% {
+        transform: translateY(-300px) translateX(300px);
+    }
+}
+
+@keyframes bearBounce {
+    0% {
+        transform: scaleY(1);
+    }
+    100% {
+        transform: scaleY(0.8);
+    }
+}
+
 .info {
     position: absolute;
     bottom: 20px;
@@ -278,5 +328,16 @@ body::before {
     
     .stats {
         justify-content: space-between;
+    }
+    
+    .jumping-bear {
+        width: 60px;
+        height: 60px;
+        bottom: 10px;
+        left: 20px;
+    }
+    
+    .jumping-bear::before {
+        font-size: 60px;
     }
 } 
