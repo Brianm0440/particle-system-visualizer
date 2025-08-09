@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Particle System Visualizer</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✨ 3D Particle System Visualizer</h1>
+            <p>Interactive particle system with real-time controls</p>
+        </div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="particleCount">Particle Count:</label>
+                <input type="range" id="particleCount" min="100" max="2000" value="500" step="100">
+                <span id="particleCountValue">500</span>
+            </div>
+            
+            <div class="control-group">
+                <label for="particleSpeed">Speed:</label>
+                <input type="range" id="particleSpeed" min="0.1" max="3" value="1" step="0.1">
+                <span id="particleSpeedValue">1.0</span>
+            </div>
+            
+            <div class="control-group">
+                <label for="particleSize">Size:</label>
+                <input type="range" id="particleSize" min="1" max="10" value="3" step="0.5">
+                <span id="particleSizeValue">3.0</span>
+            </div>
+            
+            <div class="control-group">
+                <label for="colorScheme">Color Scheme:</label>
+                <select id="colorScheme">
+                    <option value="rainbow">Rainbow</option>
+                    <option value="fire">Fire</option>
+                    <option value="ocean">Ocean</option>
+                    <option value="neon">Neon</option>
+                    <option value="aurora">Aurora</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <button id="resetBtn">Reset</button>
+                <button id="pauseBtn">Pause</button>
+            </div>
+        </div>
+        
+        <canvas id="particleCanvas"></canvas>
+        
+        <div class="info">
+            <div class="stats">
+                <span>FPS: <span id="fps">60</span></span>
+                <span>Particles: <span id="particleCountDisplay">500</span></span>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html> 

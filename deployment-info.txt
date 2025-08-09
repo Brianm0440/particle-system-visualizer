@@ -1,0 +1,42 @@
+🚀 3D Particle System Visualizer - Deployment Info
+
+📦 Bucket: gs://particle-system-visualizer-1754686501
+🌐 Project: cursor-468420
+📅 Deployed: $(date)
+
+🔐 ACCESS INFORMATION:
+Your website is now deployed and accessible to authenticated users!
+
+📱 DIRECT ACCESS (for project members):
+https://storage.googleapis.com/particle-system-visualizer-1754686501/index.html
+
+🔒 SECURITY:
+- Access restricted to authenticated Google users
+- Only project members can access by default
+- No public access (secure by default)
+
+📁 FILES DEPLOYED:
+✅ index.html - Main HTML file
+✅ styles.css - Styling
+✅ script.js - JavaScript functionality
+
+🔄 UPDATING YOUR SITE:
+To update files, use:
+./update.sh particle-system-visualizer-1754686501
+
+👀 AUTOMATIC DEPLOYMENT:
+To watch for changes and auto-deploy:
+./watch-and-deploy.sh particle-system-visualizer-1754686501
+
+📚 NEXT STEPS:
+1. Test the URL above (you'll need to be logged into Google)
+2. Share with team members who have access to your Google Cloud project
+3. Use update.sh for future changes
+4. Consider setting up a custom domain for easier access
+
+💡 TIP: If you need broader access, you can:
+- Add specific users to your Google Cloud project
+- Use Google Sites to embed this as a private page
+- Set up Google Drive sharing with your team
+
+

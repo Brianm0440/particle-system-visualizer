@@ -1,0 +1,10 @@
+constraint: constraints/iam.allowedPolicyMemberDomains
+listPolicy:
+  allowedValues:
+  - C04cm66ap
+  - "cloudbuild.gserviceaccount.com"
+  - "compute-system.iam.gserviceaccount.com"
+  - "serverless-robot-prod.iam.gserviceaccount.com"
+  - "service-937639933809@gcp-sa-cloudbuild.iam.gserviceaccount.com"
+  - "service-937639933809@gcp-sa-artifactregistry.iam.gserviceaccount.com"
+  - "service-937639933809@serverless-robot-prod.iam.gserviceaccount.com"
