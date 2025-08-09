@@ -151,8 +151,8 @@ class ParticleSystem {
     }
     
     draw() {
-        // Clear canvas with a subtle fade effect
-        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+        // Clear canvas with a more visible fade effect
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         
         // Draw connections between nearby particles
@@ -304,7 +304,7 @@ class Particle {
     draw(ctx) {
         // Draw trail with enhanced glow effect
         this.trail.forEach((point, index) => {
-            const alpha = point.alpha * 0.4;
+            const alpha = point.alpha * 0.6; // Increased from 0.4
             const size = Math.max(1, this.size * point.alpha * 0.8);
             
             ctx.save();
@@ -330,21 +330,29 @@ class Particle {
         ctx.save();
         ctx.globalAlpha = alpha;
         
-        // Enhanced glow effect
-        const glowGradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, size * 4);
+        // Enhanced glow effect - made more prominent
+        const glowGradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, size * 5);
         glowGradient.addColorStop(0, this.color);
-        glowGradient.addColorStop(0.5, this.color + '80');
+        glowGradient.addColorStop(0.3, this.color + 'CC');
+        glowGradient.addColorStop(0.7, this.color + '66');
         glowGradient.addColorStop(1, 'transparent');
         
         ctx.fillStyle = glowGradient;
         ctx.beginPath();
-        ctx.arc(this.x, this.y, size * 4, 0, Math.PI * 2);
+        ctx.arc(this.x, this.y, size * 5, 0, Math.PI * 2);
         ctx.fill();
         
-        // Main particle
+        // Main particle - made more visible
         ctx.fillStyle = this.color;
         ctx.beginPath();
         ctx.arc(this.x, this.y, size, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Add a bright center to make particles more visible
+        ctx.fillStyle = '#ffffff';
+        ctx.globalAlpha = 0.8;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, size * 0.3, 0, Math.PI * 2);
         ctx.fill();
         
         // Sparkle effect
